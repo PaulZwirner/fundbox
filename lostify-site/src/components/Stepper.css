@@ -1,0 +1,263 @@
+.outer-container {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.75rem;
+}
+
+.step-circle-container {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 60rem;
+  border-radius: 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(
+    135deg,
+    rgba(30, 30, 38, 0.92) 0%,
+    rgba(25, 25, 32, 0.88) 100%
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    0 28px 60px -20px rgba(0, 0, 0, 0.45),
+    0 18px 40px -15px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.step-indicator-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2.75rem 3rem 2.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.step-content-default {
+  position: relative;
+  overflow: hidden;
+}
+
+.step-default {
+  padding: 0 3rem 2.5rem;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Headings - full white for maximum readability */
+.step-default h2,
+.step-default h3 {
+  color: rgba(255, 255, 255, 1) !important;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+/* Paragraphs - slightly transparent but still very readable */
+.step-default p {
+  color: rgba(255, 255, 255, 0.9) !important;
+  line-height: 1.75;
+}
+
+/* Override for any text-foreground classes to ensure visibility */
+.step-default [class*="text-foreground"] {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Specifically target description text with opacity modifiers */
+.step-default p[class*="text-sm"] {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Force full opacity for text elements to ensure readability */
+.step-default p,
+.step-default h2,
+.step-default h3,
+.step-default span:not([class*="bg-"]):not([class*="inline-flex"]) {
+  opacity: 1 !important;
+}
+
+/* Improve icon container visibility with better contrast */
+.step-default span[class*="bg-primary"],
+.step-default span[class*="inline-flex"] {
+  background-color: rgba(183, 79, 111, 0.25) !important;
+  border: 1px solid rgba(183, 79, 111, 0.4) !important;
+  box-shadow: 0 2px 8px rgba(183, 79, 111, 0.2);
+}
+
+/* Ensure icons are visible */
+.step-default [class*="text-primary"],
+.step-default svg {
+  color: rgba(183, 79, 111, 1) !important;
+  opacity: 1 !important;
+}
+
+.footer-container {
+  padding: 0 3rem 3rem;
+}
+
+.footer-nav {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.footer-nav.spread {
+  justify-content: space-between;
+}
+
+.footer-nav.end {
+  justify-content: flex-end;
+}
+
+.back-button {
+  transition: transform 250ms ease, color 250ms ease, background-color 250ms ease, border-color 250ms ease;
+  border-radius: 9999px;
+  padding: 0.6rem 1.25rem;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-weight: 500;
+}
+
+.back-button:hover {
+  color: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.back-button.inactive {
+  pointer-events: none;
+  opacity: 0.5;
+  color: #a3a3a3;
+}
+
+.next-button {
+  transition: transform 250ms ease, background-color 250ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: #b74f6f;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  padding: 0.75rem 1.85rem;
+  cursor: pointer;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.next-button:hover {
+  background-color: #a04561;
+  transform: translateY(-1px);
+}
+
+.next-button:active {
+  background-color: #8d3d56;
+  transform: translateY(0);
+}
+
+.step-indicator {
+  position: relative;
+  cursor: pointer;
+  outline: none;
+}
+
+.step-indicator-inner {
+  display: flex;
+  height: 3rem;
+  width: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
+}
+
+.active-dot {
+  height: 1rem;
+  width: 1rem;
+  border-radius: 9999px;
+  background-color: #fff;
+}
+
+.step-number {
+  font-size: 1rem;
+}
+
+.step-connector {
+  position: relative;
+  height: 0.175rem;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.step-connector-inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+}
+
+.check-icon {
+  height: 1.25rem;
+  width: 1.25rem;
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .outer-container {
+    padding: 1.25rem;
+  }
+
+  .step-circle-container {
+    border-radius: 1.75rem;
+  }
+
+  .step-indicator-row {
+    gap: 1rem;
+    padding: 2rem;
+  }
+
+  .step-default {
+    padding: 0 2rem 2rem;
+  }
+
+  .footer-container {
+    padding: 0 2rem 2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .step-indicator-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .step-connector {
+    width: 4rem;
+    height: 0.125rem;
+  }
+
+  .footer-nav {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .next-button,
+  .back-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
