@@ -5,20 +5,23 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import GlassSurface from "@/components/GlassSurface";
-import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "motion/react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import LanguageToggle from "@/components/LanguageToggle";
+import AccentColorDropdown from "@/components/AccentColorDropdown";
 
 const links = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/demo", label: "Request Demo" },
+  { href: "/", labelKey: "nav.home" },
+  { href: "/about", labelKey: "nav.about" },
+  { href: "/demo", labelKey: "nav.demo" },
 ];
 
 const Navbar = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const { t } = useLanguage();
 
   return (
     <motion.header
@@ -36,19 +39,22 @@ const Navbar = () => {
           Fundbox
         </Link>
 
-        {/* Menu Icon on the Right */}
-        <div
-          className="relative"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          <button
-            className="flex items-center justify-center p-2 transition-colors hover:text-primary"
-            onClick={() => setIsOpen((prev) => !prev)}
-            aria-label="Menu"
+        {/* Accent Color Dropdown, Language Toggle and Menu Icon on the Right */}
+        <div className="flex items-center gap-3">
+          <AccentColorDropdown />
+          <LanguageToggle />
+          <div
+            className="relative"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
           >
-            <Menu className="h-5 w-5" />
-          </button>
+            <button
+              className="flex items-center justify-center p-2 transition-all hover:text-primary hover:scale-110 hover:-translate-y-0.5"
+              onClick={() => setIsOpen((prev) => !prev)}
+              aria-label="Menu"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
 
           {/* Desktop Dropdown Menu (Hover) */}
           <div className="hidden md:block">
@@ -68,7 +74,7 @@ const Navbar = () => {
                     className="w-full rounded-2xl px-2 py-2"
                     innerClassName="flex flex-col gap-1"
                   >
-                    {links.map(({ href, label }) => {
+                    {links.map(({ href, labelKey }) => {
                       const isActive = pathname === href;
                       return (
                         <Link
@@ -81,7 +87,7 @@ const Navbar = () => {
                               : "text-foreground/80 hover:bg-accent hover:text-foreground"
                           )}
                         >
-                          {label}
+                          {t(labelKey)}
                         </Link>
                       );
                     })}
@@ -89,6 +95,7 @@ const Navbar = () => {
                 </motion.div>
               )}
             </AnimatePresence>
+          </div>
           </div>
         </div>
       </div>
@@ -109,7 +116,7 @@ const Navbar = () => {
               className="w-full rounded-[2rem] px-6 py-6"
               innerClassName="flex flex-col gap-4 text-base font-medium"
             >
-              {links.map(({ href, label }) => {
+              {links.map(({ href, labelKey }) => {
                 const isActive = pathname === href;
                 return (
                   <Link
@@ -123,7 +130,7 @@ const Navbar = () => {
                         : "text-foreground/80 hover:bg-accent hover:text-foreground"
                     )}
                   >
-                    {label}
+                    {t(labelKey)}
                   </Link>
                 );
               })}

@@ -243,12 +243,32 @@ function StepIndicator({
   };
 
   return (
-    <motion.div onClick={handleClick} className="step-indicator" animate={status} initial={false}>
+    <motion.div 
+      onClick={handleClick} 
+      className="step-indicator" 
+      animate={status} 
+      initial={false}
+      whileHover={{
+        y: -6,
+        scale: 1.1,
+        transition: { duration: 0.2, ease: "easeOut" }
+      }}
+    >
       <motion.div
         variants={{
           inactive: { scale: 1, backgroundColor: 'rgba(255, 255, 255, 0.15)', color: 'rgba(255, 255, 255, 0.85)' },
-          active: { scale: 1, backgroundColor: '#b74f6f', color: '#fff', boxShadow: '0 4px 12px rgba(183, 79, 111, 0.4)' },
-          complete: { scale: 1, backgroundColor: '#b74f6f', color: '#fff', boxShadow: '0 2px 8px rgba(183, 79, 111, 0.3)' }
+          active: { 
+            scale: 1, 
+            backgroundColor: 'var(--primary)', 
+            color: '#fff', 
+            boxShadow: '0 4px 12px var(--ring)' 
+          },
+          complete: { 
+            scale: 1, 
+            backgroundColor: 'var(--primary)', 
+            color: '#fff', 
+            boxShadow: '0 2px 8px var(--ring)' 
+          }
         }}
         transition={{ duration: 0.3 }}
         className="step-indicator-inner"
@@ -268,11 +288,18 @@ function StepIndicator({
 function StepConnector({ isComplete }: { isComplete: boolean }) {
   const lineVariants = {
     incomplete: { width: 0, backgroundColor: 'transparent' },
-    complete: { width: '100%', backgroundColor: '#b74f6f' }
+    complete: { width: '100%', backgroundColor: 'var(--primary)' }
   };
 
   return (
-    <div className="step-connector">
+    <motion.div 
+      className="step-connector"
+      whileHover={{
+        y: -3,
+        scaleY: 1.3,
+        transition: { duration: 0.2, ease: "easeOut" }
+      }}
+    >
       <motion.div
         className="step-connector-inner"
         variants={lineVariants}
@@ -280,7 +307,7 @@ function StepConnector({ isComplete }: { isComplete: boolean }) {
         animate={isComplete ? 'complete' : 'incomplete'}
         transition={{ duration: 0.4 }}
       />
-    </div>
+    </motion.div>
   );
 }
 

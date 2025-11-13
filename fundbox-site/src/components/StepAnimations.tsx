@@ -2,10 +2,20 @@
 
 import React from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Check, Calendar, Camera, Image, CheckCircle2 } from "lucide-react";
+import { Check, Calendar, Camera, Sparkles, MessageSquare } from "lucide-react";
+import { useAccentColor } from "@/contexts/AccentColorContext";
+
+// Helper function to convert hex to rgba
+const hexToRgba = (hex: string, alpha: number): string => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 // Step 1: Upload Animation - Card with photo uploading behind it
 export function Step1UploadAnimation() {
+  const { colorConfig } = useAccentColor();
   const [phase, setPhase] = React.useState<"initial" | "splitting" | "uploading" | "completed">("initial");
   const [showUploadContent, setShowUploadContent] = React.useState(true);
   const [uploadProgress, setUploadProgress] = React.useState<number[]>([0, 0, 0, 0]);
@@ -128,6 +138,10 @@ export function Step1UploadAnimation() {
           height: phase === "initial" ? "12rem" : "14rem", // h-48 to h-56
           width: phase === "initial" ? "16rem" : "20rem", // w-64 to w-80
         }}
+        whileHover={{
+          scale: 1.05,
+          zIndex: 50,
+        }}
         transition={{ 
           height: {
             duration: phase === "initial" ? 0.8 : 1,
@@ -148,7 +162,7 @@ export function Step1UploadAnimation() {
             ease: "easeOut"
           }
         }}
-        className="relative z-10 flex flex-col items-center justify-center rounded-xl border border-white/20 bg-white/10 backdrop-blur-md shadow-lg overflow-hidden"
+        className="relative z-10 flex flex-col items-center justify-center rounded-xl border border-white/20 bg-white/10 backdrop-blur-md shadow-lg overflow-hidden cursor-pointer"
         style={{
           padding: phase === "initial" ? "1.5rem" : "1.5rem",
         }}
@@ -174,6 +188,10 @@ export function Step1UploadAnimation() {
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
+                whileHover={{
+                  scale: 1.15,
+                  zIndex: 60,
+                }}
                 transition={{ delay: 0.2, duration: 0.5, ease: "easeOut" }}
                 className="mb-4"
               >
@@ -293,12 +311,17 @@ export function Step1UploadAnimation() {
                       rotate: phase === "splitting" ? [-180, 20, -10, 0] : 0,
                       y: phase === "splitting" ? [0, -15, 5, 0] : 0,
                     }}
+                    whileHover={{
+                      scale: 1.2,
+                      y: -8,
+                      zIndex: 60,
+                    }}
                     transition={{
                       duration: phase === "splitting" ? 1.2 : 0.3,
                       delay: phase === "splitting" ? 0.3 + index * 0.15 : 0, // Start after "Upload" content is gone
                       ease: [0.34, 1.56, 0.64, 1],
                     }}
-                    className="relative flex h-16 w-16 flex-col items-center justify-center rounded-lg border border-white/20 bg-white/10 p-2 backdrop-blur-sm shadow-md"
+                    className="relative flex h-16 w-16 flex-col items-center justify-center rounded-lg border border-white/20 bg-white/10 p-2 backdrop-blur-sm shadow-md cursor-pointer"
                   >
                   {/* Loading state - show loading icon */}
                   {!isCompleted && (
@@ -407,6 +430,7 @@ export function Step1UploadAnimation() {
 
 // Step 2: AI Match Animation - Multiple photo cards on left, text message on right, magnetically attracts one and collides
 export function Step2MatchAnimation() {
+  const { colorConfig } = useAccentColor();
   const [phase, setPhase] = React.useState<"initial" | "typing" | "attracting" | "colliding" | "checkmark">("initial");
   const [typedText, setTypedText] = React.useState("");
   const [showCursor, setShowCursor] = React.useState(true);
@@ -473,7 +497,7 @@ export function Step2MatchAnimation() {
         return (
           <motion.div
             key={index}
-            className="absolute left-[10%]"
+            className="absolute left-[10%] cursor-pointer"
             style={{
               zIndex: phase === "attracting" && isSelected 
                 ? 30 
@@ -545,6 +569,11 @@ export function Step2MatchAnimation() {
               : phase === "typing"
                 ? stackRotation // Cards rotate to stacked position during typing
               : stackRotation,
+            }}
+            whileHover={{
+              scale: phase === "checkmark" ? 0 : 1.15,
+              y: phase === "checkmark" ? 0 : -10,
+              zIndex: 50,
             }}
             transition={{
               x: {
@@ -655,12 +684,16 @@ export function Step2MatchAnimation() {
                   ? [0.2, 0, 0.1, 1]
                 : phase === "attracting" && isSelected
                   ? [0.16, 1, 0.3, 1]
-                : [0.16, 1, 0.3, 1],
+                  : [0.16, 1, 0.3, 1],
               },
             }}
           >
             <motion.div
               className="relative rounded-xl border border-white/30 shadow-2xl overflow-hidden"
+              whileHover={{
+                scale: 1.1,
+                zIndex: 55,
+              }}
               style={{
                 width: '110px',
                 height: '150px',
@@ -672,7 +705,7 @@ export function Step2MatchAnimation() {
               <div 
                 className="w-full h-full relative"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(183, 79, 111, 0.6) 0%, rgba(183, 79, 111, 0.5) 50%, rgba(183, 79, 111, 0.7) 100%)',
+                  background: `linear-gradient(135deg, ${hexToRgba(colorConfig.primary, 0.6)} 0%, ${hexToRgba(colorConfig.primary, 0.5)} 50%, ${hexToRgba(colorConfig.primary, 0.7)} 100%)`,
                 }}
               >
                 {/* Image pattern overlay */}
@@ -692,7 +725,7 @@ export function Step2MatchAnimation() {
 
       {/* Text Message Bubble - Right Side */}
       <motion.div
-        className="absolute right-[15%] z-20"
+        className="absolute right-[15%] z-20 cursor-pointer"
         initial={{ 
           x: 100, 
           opacity: 0, 
@@ -727,6 +760,11 @@ export function Step2MatchAnimation() {
             : phase === "attracting"
               ? [0, -5, 5, 0]
               : 0,
+        }}
+        whileHover={{
+          scale: phase === "checkmark" ? 0 : phase === "colliding" ? [1, 1.5, 0] : 1.15,
+          y: phase === "checkmark" ? 0 : -5,
+          zIndex: 50,
         }}
         transition={{
           x: {
@@ -778,7 +816,9 @@ export function Step2MatchAnimation() {
                 : 0,
             ease: phase === "colliding"
               ? [0.2, 0, 0.1, 1]
-              : [0.16, 1, 0.3, 1],
+              : phase === "attracting"
+                ? [0.16, 1, 0.3, 1]
+                : [0.16, 1, 0.3, 1],
           },
         }}
       >
@@ -924,18 +964,24 @@ export function Step2MatchAnimation() {
         )}
       </AnimatePresence>
 
-      {/* Checkmark - Center */}
+      {/* Checkmark Card - Center */}
       <AnimatePresence>
         {phase === "checkmark" && (
           <motion.div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30"
-            initial={{ scale: 0, opacity: 0, rotate: -180 }}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 cursor-pointer"
+            initial={{ scale: 0, opacity: 0, rotate: -180, y: 20 }}
             animate={{ 
-              scale: [0, 1.3, 1],
+              scale: [0, 1.2, 1],
               opacity: [0, 1, 1],
               rotate: [0, 10, -5, 0],
+              y: 0,
             }}
-            exit={{ scale: 0, opacity: 0 }}
+            whileHover={{
+              scale: 1.05,
+              y: -5,
+              zIndex: 60,
+            }}
+            exit={{ scale: 0, opacity: 0, rotate: 180 }}
             transition={{
               scale: {
                 duration: 1.0,
@@ -948,13 +994,19 @@ export function Step2MatchAnimation() {
                 duration: 1.0,
                 ease: [0.34, 1.56, 0.64, 1],
               },
+              y: {
+                duration: 1.0,
+                ease: [0.34, 1.56, 0.64, 1],
+              },
             }}
           >
+            {/* Glassmorphism Card */}
             <motion.div
-              className="relative w-16 h-16 rounded-full flex items-center justify-center"
+              className="relative rounded-2xl border border-white/30 bg-white/20 backdrop-blur-xl shadow-2xl overflow-hidden"
               style={{
-                backgroundColor: '#b74f6f',
-                boxShadow: '0 2px 8px rgba(183, 79, 111, 0.3)',
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%)',
+                padding: '2rem',
+                minWidth: '200px',
               }}
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -963,27 +1015,123 @@ export function Step2MatchAnimation() {
                 opacity: { duration: 0.5, delay: 0.2 },
               }}
             >
-              <motion.svg
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{
-                  pathLength: { duration: 0.3, delay: 0.4, ease: 'easeOut' },
-                  opacity: { duration: 0.2, delay: 0.4 },
+              {/* Shine effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-shimmer pointer-events-none" />
+              
+              {/* Card content */}
+              <div className="relative flex flex-col items-center justify-center gap-3">
+                {/* Checkmark circle with glow */}
+                <motion.div
+                  className="relative w-20 h-20 rounded-full flex items-center justify-center"
+                  style={{
+                    backgroundColor: colorConfig.primary,
+                    boxShadow: `0 4px 20px ${hexToRgba(colorConfig.primary, 0.5)}, 0 0 40px ${hexToRgba(colorConfig.primary, 0.3)}`,
+                  }}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ 
+                    scale: [0, 1.2, 1],
+                    opacity: [0, 1, 1],
+                  }}
+                  transition={{
+                    scale: { duration: 0.8, delay: 0.3, ease: [0.34, 1.56, 0.64, 1] },
+                    opacity: { duration: 0.6, delay: 0.3 },
+                  }}
+                >
+                  {/* Pulsing glow ring */}
+                  <motion.div
+                    className="absolute inset-0 rounded-full border-2 border-primary/50"
+                    animate={{ 
+                      scale: [1, 1.3, 1],
+                      opacity: [0.6, 0, 0.6],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                  
+                  {/* Checkmark icon */}
+                  <motion.svg
+                    initial={{ pathLength: 0, opacity: 0, scale: 0.8 }}
+                    animate={{ pathLength: 1, opacity: 1, scale: 1 }}
+                    transition={{
+                      pathLength: { duration: 0.5, delay: 0.6, ease: 'easeOut' },
+                      opacity: { duration: 0.3, delay: 0.6 },
+                      scale: { duration: 0.4, delay: 0.6, ease: [0.34, 1.56, 0.64, 1] },
+                    }}
+                    className="w-10 h-10 text-white relative z-10"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    viewBox="0 0 24 24"
+                    style={{ color: 'white' }}
+                  >
+                    <motion.path
+                      d="M5 13l4 4L19 7"
+                      style={{ stroke: 'white' }}
+                    />
+                  </motion.svg>
+                  
+                  {/* Success particles */}
+                  {[...Array(6)].map((_, i) => {
+                    const angle = (i * Math.PI * 2) / 6;
+                    return (
+                      <motion.div
+                        key={i}
+                        className="absolute left-1/2 top-1/2 h-1.5 w-1.5 rounded-full bg-white/90"
+                        initial={{
+                          x: 0,
+                          y: 0,
+                          opacity: 0,
+                          scale: 0,
+                        }}
+                        animate={{
+                          x: Math.cos(angle) * 30,
+                          y: Math.sin(angle) * 30,
+                          opacity: [0, 1, 0],
+                          scale: [0, 1, 0],
+                        }}
+                        transition={{
+                          duration: 1.2,
+                          delay: 0.8 + i * 0.1,
+                          ease: "easeOut",
+                        }}
+                      />
+                    );
+                  })}
+                </motion.div>
+                
+                {/* Success text */}
+                <motion.div
+                  className="flex flex-col items-center gap-1"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.9, duration: 0.5, ease: "easeOut" }}
+                >
+                  <motion.p
+                    className="text-base font-bold text-foreground"
+                    style={{ color: colorConfig.primary }}
+                  >
+                    Match Found!
+                  </motion.p>
+                  <motion.p
+                    className="text-xs text-foreground/70 font-medium"
+                  >
+                    Item successfully matched
+                  </motion.p>
+                </motion.div>
+              </div>
+              
+              {/* Glow effect behind card */}
+              <div 
+                className="absolute inset-0 rounded-2xl blur-2xl -z-10 opacity-60"
+                style={{
+                  backgroundColor: colorConfig.primary,
                 }}
-                className="w-9 h-9 text-white"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={3}
-                viewBox="0 0 24 24"
-                style={{ color: 'white' }}
-              >
-                <motion.path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 13l4 4L19 7"
-                  style={{ stroke: 'white' }}
-                />
-              </motion.svg>
+              />
             </motion.div>
           </motion.div>
         )}
@@ -1012,18 +1160,27 @@ export function Step2MatchAnimation() {
 
 // Step 3: Calendar Animation - Appointment scheduling
 export function Step3CalendarAnimation() {
+  const { colorConfig } = useAccentColor();
   const [phase, setPhase] = React.useState<"waiting" | "appearing" | "moving" | "landed">("waiting");
+  const [phase2, setPhase2] = React.useState<"waiting" | "appearing" | "moving" | "landed">("waiting");
   const calendarRef = React.useRef<HTMLDivElement>(null);
   const targetDayRef = React.useRef<HTMLDivElement>(null);
+  const targetDay2Ref = React.useRef<HTMLDivElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [positions, setPositions] = React.useState({
     calendarCenter: { x: 0, y: 0 },
     target: { x: 0, y: 0, width: 0, height: 0 },
   });
+  const [positions2, setPositions2] = React.useState({
+    calendarCenter: { x: 0, y: 0 },
+    target: { x: 0, y: 0, width: 0, height: 0 },
+  });
   const targetDay = 15;
+  const targetDay2 = 13;
 
   React.useEffect(() => {
     setPhase("waiting");
+    setPhase2("waiting");
     
     const calculatePositions = () => {
       if (!calendarRef.current || !targetDayRef.current || !containerRef.current) return;
@@ -1048,32 +1205,70 @@ export function Step3CalendarAnimation() {
         },
       });
     };
+
+    const calculatePositions2 = () => {
+      if (!calendarRef.current || !targetDay2Ref.current || !containerRef.current) return;
+      
+      const calendarRect = calendarRef.current.getBoundingClientRect();
+      const targetRect = targetDay2Ref.current.getBoundingClientRect();
+      const containerRect = containerRef.current.getBoundingClientRect();
+      
+      // Start from the right side of the calendar instead of center
+      const calendarRightX = calendarRect.right - containerRect.left + 100; // 100px to the right
+      const calendarCenterY = calendarRect.top - containerRect.top + calendarRect.height / 2;
+      
+      setPositions2({
+        calendarCenter: {
+          x: calendarRightX,
+          y: calendarCenterY,
+        },
+        target: {
+          x: targetRect.left - containerRect.left + targetRect.width / 2,
+          y: targetRect.top - containerRect.top + targetRect.height / 2,
+          width: targetRect.width,
+          height: targetRect.height,
+        },
+      });
+    };
     
-    // Phase 1: Calculate positions and show card
+    // First appointment: Phase 1 - Calculate positions and show card
     const timer1 = setTimeout(() => {
       calculatePositions();
       setPhase("appearing");
     }, 500);
     
-    // Phase 2: Start moving to target (after card appears)
+    // First appointment: Phase 2 - Start moving to target (after card appears)
     const timer2 = setTimeout(() => {
       setPhase("moving");
     }, 1000);
     
-    // Phase 3: Land and fade out
+    // First appointment: Phase 3 - Land and fade out
     const timer3 = setTimeout(() => {
       setPhase("landed");
+      
+      // Start second appointment after first completes
+      calculatePositions2();
+      setPhase2("appearing");
     }, 2000);
+
+    // Second appointment: Phase 2 - Start moving to target
+    const timer4 = setTimeout(() => {
+      setPhase2("moving");
+    }, 2500);
+
+    // Second appointment: Phase 3 - Land and fade out
+    const timer5 = setTimeout(() => {
+      setPhase2("landed");
+    }, 3500);
 
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
       clearTimeout(timer3);
+      clearTimeout(timer4);
+      clearTimeout(timer5);
     };
   }, []);
-
-  const popSize = 120;
-  const cellSize = positions.target.width || 40;
 
   return (
     <div ref={containerRef} className="relative mt-6 flex h-80 items-center justify-center overflow-visible rounded-2xl">
@@ -1086,11 +1281,15 @@ export function Step3CalendarAnimation() {
           opacity: 1,
           y: 0,
         }}
+        whileHover={{
+          scale: 1.02,
+          zIndex: 30,
+        }}
         transition={{ 
           duration: 0.8,
           ease: [0.16, 1, 0.3, 1]
         }}
-        className="relative z-10 rounded-xl border border-white/20 p-5 shadow-xl"
+        className="relative z-10 rounded-xl border border-white/20 p-5 shadow-xl cursor-pointer"
         style={{
           width: '420px',
           height: '320px',
@@ -1118,27 +1317,35 @@ export function Step3CalendarAnimation() {
           {Array.from({ length: 28 }).map((_, i) => {
             const day = i + 1;
             const isTarget = day === targetDay;
+            const isTarget2 = day === targetDay2;
             // Highlight target day after landing
             const isHighlighted = isTarget && phase === "landed";
+            const isHighlighted2 = isTarget2 && phase2 === "landed";
             
             return (
               <motion.div
                 key={i}
-                ref={isTarget ? targetDayRef : null}
-                className={`aspect-square rounded-lg border text-xs relative flex items-center justify-center transition-colors duration-300 ${
-                  isHighlighted
+                ref={isTarget ? targetDayRef : isTarget2 ? targetDay2Ref : null}
+                className={`aspect-square rounded-lg border text-xs relative flex items-center justify-center transition-colors duration-300 cursor-pointer ${
+                  isHighlighted || isHighlighted2
                     ? 'border-primary bg-primary/20 text-primary font-semibold'
+                    : (isTarget || isTarget2)
+                    ? 'border-primary/30 bg-primary/10 text-primary/70'
                     : 'border-white/10 bg-white/5 text-foreground/40'
                 }`}
                 animate={
-                  isTarget && phase === "landed"
+                  (isTarget && phase === "landed") || (isTarget2 && phase2 === "landed")
                     ? {
                         scale: [1, 1.15, 1],
                       }
                     : {}
                 }
+                whileHover={{
+                  scale: 1.2,
+                  zIndex: 40,
+                }}
                 transition={
-                  isTarget && phase === "landed"
+                  (isTarget && phase === "landed") || (isTarget2 && phase2 === "landed")
                     ? {
                         duration: 0.5,
                         ease: "easeOut",
@@ -1195,6 +1402,11 @@ export function Step3CalendarAnimation() {
                 scale: phase === "landed" ? 0 : phase === "appearing" ? 1 : 0.9,
                 rotate: phase === "landed" ? 0 : phase === "moving" ? 2 : 0,
               }}
+              whileHover={{
+                scale: phase === "landed" ? 0 : 1.15,
+                y: phase === "landed" ? 0 : -5,
+                zIndex: 60,
+              }}
               transition={{
                 opacity: {
                   duration: phase === "appearing" ? 0.4 : phase === "landed" ? 0.3 : 0,
@@ -1209,7 +1421,7 @@ export function Step3CalendarAnimation() {
                   ease: [0.4, 0, 0.2, 1],
                 },
               }}
-              className="relative"
+              className="relative cursor-pointer"
             >
               {/* New cleaner card design */}
               <div className="relative rounded-2xl bg-gradient-to-br from-primary via-primary/90 to-primary/80 shadow-2xl border border-primary/50 backdrop-blur-xl overflow-hidden">
@@ -1228,6 +1440,96 @@ export function Step3CalendarAnimation() {
                   <div className="flex flex-col min-w-0">
                     <div className="text-sm font-bold text-white leading-tight">Schedule Pickup</div>
                     <div className="text-xs text-white/80 font-medium">Jan 15</div>
+                  </div>
+                </div>
+                
+                {/* Glow effect */}
+                <div className="absolute inset-0 rounded-2xl bg-primary/30 blur-xl -z-10 opacity-50" />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Second Schedule Pickup Card (from right side) */}
+      <AnimatePresence>
+        {phase2 !== "waiting" && positions2.target.width > 0 && positions2.calendarCenter.x > 0 && (
+          <motion.div
+            key="schedule-card-2"
+            className="absolute z-20"
+            style={{
+              left: 0,
+              top: 0,
+              transform: 'translate(-50%, -50%)',
+            }}
+            initial={{
+              x: positions2.calendarCenter.x,
+              y: positions2.calendarCenter.y,
+            }}
+            animate={{
+              x: phase2 === "moving" || phase2 === "landed" ? positions2.target.x : positions2.calendarCenter.x,
+              y: phase2 === "moving" || phase2 === "landed" ? positions2.target.y : positions2.calendarCenter.y,
+            }}
+            transition={{
+              x: {
+                duration: 1,
+                ease: [0.4, 0, 0.2, 1],
+              },
+              y: {
+                duration: 1,
+                ease: [0.4, 0, 0.2, 1],
+              },
+            }}
+          >
+            <motion.div
+              initial={{
+                opacity: 0,
+                scale: 0,
+                rotate: 5,
+              }}
+              animate={{
+                opacity: phase2 === "landed" ? 0 : 1,
+                scale: phase2 === "landed" ? 0 : phase2 === "appearing" ? 1 : 0.9,
+                rotate: phase2 === "landed" ? 0 : phase2 === "moving" ? -2 : 0,
+              }}
+              whileHover={{
+                scale: phase2 === "landed" ? 0 : 1.15,
+                y: phase2 === "landed" ? 0 : -5,
+                zIndex: 60,
+              }}
+              transition={{
+                opacity: {
+                  duration: phase2 === "appearing" ? 0.4 : phase2 === "landed" ? 0.3 : 0,
+                  ease: "easeOut",
+                },
+                scale: {
+                  duration: phase2 === "appearing" ? 0.5 : phase2 === "moving" ? 0.2 : phase2 === "landed" ? 0.3 : 0,
+                  ease: [0.34, 1.56, 0.64, 1],
+                },
+                rotate: {
+                  duration: 1,
+                  ease: [0.4, 0, 0.2, 1],
+                },
+              }}
+              className="relative cursor-pointer"
+            >
+              {/* New cleaner card design */}
+              <div className="relative rounded-2xl bg-gradient-to-br from-primary via-primary/90 to-primary/80 shadow-2xl border border-primary/50 backdrop-blur-xl overflow-hidden">
+                {/* Shine effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-shimmer pointer-events-none" />
+                
+                {/* Card content - mirrored layout */}
+                <div className="relative px-5 py-3.5 flex items-center gap-3 whitespace-nowrap flex-row-reverse">
+                  <motion.div
+                    animate={{ scale: [1, 1.08, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="flex-shrink-0"
+                  >
+                    <Calendar className="h-5 w-5 text-white" />
+                  </motion.div>
+                  <div className="flex flex-col min-w-0">
+                    <div className="text-sm font-bold text-white leading-tight">Schedule Pickup</div>
+                    <div className="text-xs text-white/80 font-medium">Jan 13</div>
                   </div>
                 </div>
                 

@@ -98,14 +98,14 @@
       linear-gradient(
         90deg,
         rgba(255, 255, 255, 0.55),
-        rgba(183, 79, 111, 0.75),
-        rgba(143, 149, 211, 0.75),
+        var(--primary),
+        var(--secondary),
         rgba(255, 255, 255, 0.55)
       );
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     box-shadow:
-      0 6px 18px -8px rgba(183, 79, 111, 0.6),
+      0 6px 18px -8px var(--ring),
       inset 0 1px 0 rgba(255, 255, 255, 0.35);
     transform-origin: left center;
   }
@@ -120,7 +120,7 @@
   }
 
   .liquid-progress::before {
-    background: conic-gradient(from 0deg, rgba(255, 255, 255, 0.7), rgba(183, 79, 111, 0.5), rgba(143, 149, 211, 0.55), rgba(255, 255, 255, 0.7));
+    background: conic-gradient(from 0deg, rgba(255, 255, 255, 0.7), var(--primary), var(--secondary), rgba(255, 255, 255, 0.7));
     animation: liquidProgressWave 9s linear infinite;
     opacity: 0.65;
   }
@@ -226,7 +226,7 @@
   }
 
   ::selection {
-    background: rgba(183, 79, 111, 0.6);
+    background: var(--ring);
     color: var(--background);
   }
 
@@ -240,5 +240,50 @@
     font-family: "Trajan Pro", "TrajanPro-Regular", "Times New Roman", serif;
     font-weight: 400;
     letter-spacing: 0.02em;
+  }
+
+  .flowing-border {
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .flowing-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      transparent 30%,
+      var(--primary) 50%,
+      transparent 70%,
+      transparent
+    );
+    background-size: 200% 100%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    animation: flowingBorder 2s linear infinite;
+  }
+
+  .group:hover .flowing-border {
+    opacity: 1;
+  }
+}
+
+@keyframes flowingBorder {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }

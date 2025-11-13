@@ -41,7 +41,15 @@ const TrueFocus = ({
   }, [words, alwaysVisibleIndices]);
   
   // Initialize currentIndex to first animatable index
-  const [currentIndex, setCurrentIndex] = useState(() => animatableIndices.length > 0 ? animatableIndices[0] : 0);
+  const getInitialIndex = () => {
+    if (animatableIndices.length > 0) {
+      const initial = animatableIndices[0];
+      // If initial index is in always-visible list, use it anyway (will be handled by interval)
+      return initial;
+    }
+    return 0;
+  };
+  const [currentIndex, setCurrentIndex] = useState(getInitialIndex);
   const [lastActiveIndex, setLastActiveIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -49,13 +57,14 @@ const TrueFocus = ({
 
   useEffect(() => {
     if (!manualMode && animatableIndices.length > 0) {
-      // Reset to first animatable index if current index is in always-visible list
-      setCurrentIndex(prev => {
-        if (alwaysVisibleIndices.includes(prev)) {
-          return animatableIndices[0];
-        }
-        return prev;
-      });
+      // Ensure current index is valid (not in always-visible list)
+      const isValidIndex = !alwaysVisibleIndices.includes(currentIndex) && animatableIndices.includes(currentIndex);
+      if (!isValidIndex) {
+        // Use setTimeout to avoid synchronous setState in effect
+        setTimeout(() => {
+          setCurrentIndex(animatableIndices[0]);
+        }, 0);
+      }
 
       const interval = setInterval(
         () => {
@@ -70,7 +79,7 @@ const TrueFocus = ({
       );
       return () => clearInterval(interval);
     }
-  }, [manualMode, animationDuration, pauseBetweenAnimations, alwaysVisibleIndices, animatableIndices]);
+  }, [manualMode, animationDuration, pauseBetweenAnimations, alwaysVisibleIndices, animatableIndices, currentIndex]);
 
   useEffect(() => {
     if (currentIndex === null || currentIndex === -1) return;

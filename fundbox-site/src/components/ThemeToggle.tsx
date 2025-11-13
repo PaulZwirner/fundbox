@@ -63,7 +63,7 @@ const ThemeToggle = ({ className }: ThemeToggleProps) => {
       type="button"
       onClick={toggleTheme}
       className={cn(
-        "group relative flex h-9 w-16 items-center justify-between rounded-full border border-border/60 bg-black/30 px-2 text-xs font-medium uppercase tracking-[0.18em] text-foreground/70 shadow-[0_12px_34px_-22px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-all hover:border-primary/60 hover:text-foreground md:h-10 md:w-20",
+        "group relative flex h-9 w-16 items-center justify-between rounded-full border border-border/60 bg-black/30 px-2 text-xs font-medium uppercase tracking-[0.18em] text-foreground/70 shadow-[0_12px_34px_-22px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-all hover:border-primary/60 hover:text-foreground hover:scale-105 hover:-translate-y-1 hover:shadow-[0_16px_40px_-20px_rgba(0,0,0,0.8)] md:h-10 md:w-20",
         className
       )}
       aria-label="Toggle theme"
@@ -72,7 +72,10 @@ const ThemeToggle = ({ className }: ThemeToggleProps) => {
       <MoonStar className={cn("h-4 w-4 transition-opacity", isDark ? "opacity-100" : "opacity-40")} />
       <motion.span
         layout
-        className="absolute top-1 left-1 flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-r from-primary via-secondary to-primary/70 shadow-[0_10px_24px_-18px_rgba(183,79,111,0.9)]"
+        className="absolute top-1 left-1 flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-r from-primary via-secondary to-primary/70"
+        style={{
+          boxShadow: '0 10px 24px -18px var(--ring)',
+        }}
         animate={{ x: isDark ? 36 : 0 }}
         transition={{ type: "spring", stiffness: 320, damping: 26 }}
       >

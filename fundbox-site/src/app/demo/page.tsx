@@ -21,17 +21,24 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-const formSchema = z.object({
-  name: z.string().min(2, "Please tell us who we will be speaking with."),
-  company: z.string().min(2, "Company or institution name is required."),
-  email: z.string().email("Please provide a valid email address."),
-  message: z.string().max(600).optional(),
-});
-
-type DemoFormValues = z.infer<typeof formSchema>;
+type DemoFormValues = {
+  name: string;
+  company: string;
+  email: string;
+  message?: string;
+};
 
 const DemoPage = () => {
+  const { t } = useLanguage();
+
+  const formSchema = z.object({
+    name: z.string().min(2, t("demo.nameError")),
+    company: z.string().min(2, t("demo.companyError")),
+    email: z.string().email(t("demo.emailError")),
+    message: z.string().max(600).optional(),
+  });
   const form = useForm<DemoFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,7 +54,7 @@ const DemoPage = () => {
     setIsSubmitting(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 900));
-      toast.success("Thanks! Our team will reach out within one business day.", {
+      toast.success(t("demo.success"), {
         description: `${values.name}, we just sent a confirmation to ${values.email}.`,
       });
       form.reset();
@@ -61,15 +68,15 @@ const DemoPage = () => {
       <SectionWrapper className="pt-28">
         <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div className="space-y-6">
-            <span className="text-xs uppercase tracking-[0.35em] text-primary/80">Schedule a walkthrough</span>
-            <h1 className="text-4xl font-semibold text-foreground sm:text-5xl">Get your Fundbox demo now!</h1>
+            <span className="text-xs uppercase tracking-[0.35em] text-primary/80">{t("demo.scheduleWalkthrough")}</span>
+            <h1 className="text-4xl font-semibold text-foreground sm:text-5xl">{t("demo.title")}</h1>
             <p className="text-base text-foreground/70">
-              Tell us about your operation, and we&apos;ll tailor a live session that mirrors your workflows. Expect a reply in less than a day.
+              {t("demo.desc")}
             </p>
             <ul className="space-y-3 text-sm text-foreground/65">
-              <li>• Understand how AI matching fits your current process.</li>
-              <li>• Discover onboarding timelines, integrations, and pricing.</li>
-              <li>• Get rollout playbooks from venues just like yours.</li>
+              <li>{t("demo.bullet1")}</li>
+              <li>{t("demo.bullet2")}</li>
+              <li>{t("demo.bullet3")}</li>
             </ul>
           </div>
           <GlassSurface variant="card" className="p-10">
@@ -80,9 +87,9 @@ const DemoPage = () => {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full name</FormLabel>
+                      <FormLabel>{t("demo.fullName")}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Avery Marsh" {...field} className="h-12 rounded-full bg-white/70 px-5 text-sm" />
+                        <Input placeholder={t("demo.namePlaceholder")} {...field} className="h-12 rounded-full bg-white/70 px-5 text-sm" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -93,9 +100,9 @@ const DemoPage = () => {
                   name="company"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Company / Institution</FormLabel>
+                      <FormLabel>{t("demo.company")}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Aurora Stadium" {...field} className="h-12 rounded-full bg-white/70 px-5 text-sm" />
+                        <Input placeholder={t("demo.companyPlaceholder")} {...field} className="h-12 rounded-full bg-white/70 px-5 text-sm" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -106,10 +113,10 @@ const DemoPage = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{t("demo.email")}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="you@organization.com"
+                          placeholder={t("demo.emailPlaceholder")}
                           type="email"
                           {...field}
                           className="h-12 rounded-full bg-white/70 px-5 text-sm"
@@ -124,10 +131,10 @@ const DemoPage = () => {
                   name="message"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Message (optional)</FormLabel>
+                      <FormLabel>{t("demo.message")}</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Share priorities, current tools, or unique workflows."
+                          placeholder={t("demo.messagePlaceholder")}
                           {...field}
                           className="min-h-[140px] rounded-3xl bg-white/70 px-5 py-4 text-sm"
                         />
@@ -144,10 +151,10 @@ const DemoPage = () => {
                   >
                     {isSubmitting ? (
                       <span className="flex items-center justify-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" /> Sending
+                        <Loader2 className="h-4 w-4 animate-spin" /> {t("demo.sending")}
                       </span>
                     ) : (
-                      "Request demo"
+                      t("demo.requestDemo")
                     )}
                   </Button>
                 </motion.div>
