@@ -16,37 +16,122 @@ const hexToRgba = (hex: string, alpha: number): string => {
 // Step 1: Upload Animation - Card with photo uploading behind it
 export function Step1UploadAnimation() {
   const { colorConfig } = useAccentColor();
-  const [phase, setPhase] = React.useState<"initial" | "splitting" | "uploading" | "completed">("initial");
+  const [phase, setPhase] = React.useState<"initial" | "splitting" | "uploading" | "completed" | "resetting">("initial");
   const [showUploadContent, setShowUploadContent] = React.useState(true);
   const [uploadProgress, setUploadProgress] = React.useState<number[]>([0, 0, 0, 0]);
   const [completedCards, setCompletedCards] = React.useState<boolean[]>([false, false, false, false]);
+  const [restartKey, setRestartKey] = React.useState(0);
   const numCards = 4;
   const intervalsRef = React.useRef<NodeJS.Timeout[]>([]);
+  const restartTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
   React.useEffect(() => {
-    // Reset on mount
-    setPhase("initial");
-    setShowUploadContent(true);
+    // Reset state
     setUploadProgress([0, 0, 0, 0]);
     setCompletedCards([false, false, false, false]);
     intervalsRef.current = [];
+    
+    let resetDelay = 0;
+    let startDelay = 0;
+    
+    // If restarting, fade out cards first, then reset
+    if (restartKey > 0) {
+      setPhase("resetting");
+      setShowUploadContent(false);
+      resetDelay = 1200; // Time for cards to fade out
+      startDelay = 300; // Delay before showing upload button
+      
+      // Wait for cards to fade out, then reset everything
+      const resetTimer = setTimeout(() => {
+        setPhase("initial");
+        // Smoothly show upload button after a brief moment
+        setTimeout(() => {
+          setShowUploadContent(true);
+        }, startDelay);
+      }, resetDelay);
+      
+      // Continue with animation timers after reset completes
+      const totalResetTime = resetDelay + startDelay;
+      
+      // Phase 1: Hit effect at 1.5s after upload button appears
+      const fadeOutTimer = setTimeout(() => {
+        setShowUploadContent(false);
+      }, totalResetTime + 2500);
+      
+      // Phase 2: Start splitting
+      const hitTimer = setTimeout(() => {
+        setPhase("splitting");
+      }, totalResetTime + 3000);
 
-    // Phase 1: Show "Upload" card - hit effect at 1.5s
-    // Phase 1.5: Fade out "Upload" content - 2300ms (after hit effect completes)
+      // Phase 3: Start uploading
+      const uploadingTimer = setTimeout(() => {
+        setPhase("uploading");
+        
+        // Start progress for each card
+        for (let index = 0; index < numCards; index++) {
+          const interval = setInterval(() => {
+            setUploadProgress((prev) => {
+              const newProgress = [...prev];
+              if (newProgress[index] < 100) {
+                newProgress[index] = Math.min(newProgress[index] + 2, 100);
+              } else {
+                clearInterval(interval);
+                setCompletedCards((prev) => {
+                  const newCompleted = [...prev];
+                  newCompleted[index] = true;
+                  return newCompleted;
+                });
+              }
+              return newProgress;
+            });
+          }, 30 + index * 10);
+          intervalsRef.current.push(interval);
+        }
+      }, totalResetTime + 5000);
+
+      // Phase 4: All cards completed - restart after 10 seconds
+      const completedTimer = setTimeout(() => {
+        setPhase("completed");
+        
+        restartTimerRef.current = setTimeout(() => {
+          setRestartKey((prev) => prev + 1);
+        }, 10000);
+      }, totalResetTime + 8500);
+
+      return () => {
+        clearTimeout(resetTimer);
+        clearTimeout(fadeOutTimer);
+        clearTimeout(hitTimer);
+        clearTimeout(uploadingTimer);
+        clearTimeout(completedTimer);
+        if (restartTimerRef.current) {
+          clearTimeout(restartTimerRef.current);
+          restartTimerRef.current = null;
+        }
+        intervalsRef.current.forEach(interval => clearInterval(interval));
+        intervalsRef.current = [];
+      };
+    }
+    
+    // Initial mount - start normally
+    setPhase("initial");
+    setShowUploadContent(true);
+
+    // Phase 1: Hit effect at 1.5s
     const fadeOutTimer = setTimeout(() => {
       setShowUploadContent(false);
-    }, 2300);
+    }, 2500);
     
-    // Phase 2: Start splitting - 2800ms (after "Upload" content has faded out)
+    // Phase 2: Start splitting
     const hitTimer = setTimeout(() => {
       setPhase("splitting");
-    }, 2800);
+    }, 3000);
 
-    // Phase 3: After splitting animation completes - 4800ms (allows full split animation)
+    // Phase 3: Start uploading
     const uploadingTimer = setTimeout(() => {
       setPhase("uploading");
       
-      // Start progress for each card with staggered delays
+      // Start progress for each card
       for (let index = 0; index < numCards; index++) {
         const interval = setInterval(() => {
           setUploadProgress((prev) => {
@@ -55,7 +140,6 @@ export function Step1UploadAnimation() {
               newProgress[index] = Math.min(newProgress[index] + 2, 100);
             } else {
               clearInterval(interval);
-              // Mark as completed when progress reaches 100
               setCompletedCards((prev) => {
                 const newCompleted = [...prev];
                 newCompleted[index] = true;
@@ -64,25 +148,33 @@ export function Step1UploadAnimation() {
             }
             return newProgress;
           });
-        }, 30 + index * 10); // Staggered speed
+        }, 30 + index * 10);
         intervalsRef.current.push(interval);
       }
-    }, 4800);
+    }, 5000);
 
-    // Phase 4: All cards completed
+    // Phase 4: All cards completed - restart after 10 seconds
     const completedTimer = setTimeout(() => {
       setPhase("completed");
-    }, 8000);
+      
+      restartTimerRef.current = setTimeout(() => {
+        setRestartKey((prev) => prev + 1);
+      }, 10000);
+    }, 8500);
 
     return () => {
       clearTimeout(fadeOutTimer);
       clearTimeout(hitTimer);
       clearTimeout(uploadingTimer);
       clearTimeout(completedTimer);
+      if (restartTimerRef.current) {
+        clearTimeout(restartTimerRef.current);
+        restartTimerRef.current = null;
+      }
       intervalsRef.current.forEach(interval => clearInterval(interval));
       intervalsRef.current = [];
     };
-  }, []);
+  }, [restartKey]);
 
 
   return (
@@ -127,7 +219,7 @@ export function Step1UploadAnimation() {
       {/* Single card that expands and shows upload icons inside */}
       <motion.div
         initial={{ 
-          scale: 0.9, 
+          scale: 0.85, 
           opacity: 0,
           height: "12rem", // h-48
           width: "16rem", // w-64
@@ -135,8 +227,8 @@ export function Step1UploadAnimation() {
         animate={{
           scale: 1,
           opacity: 1,
-          height: phase === "initial" ? "12rem" : "14rem", // h-48 to h-56
-          width: phase === "initial" ? "16rem" : "20rem", // w-64 to w-80
+          height: (phase === "initial" || phase === "resetting") ? "12rem" : "14rem", // h-48 to h-56
+          width: (phase === "initial" || phase === "resetting") ? "16rem" : "20rem", // w-64 to w-80
         }}
         whileHover={{
           scale: 1.05,
@@ -144,22 +236,22 @@ export function Step1UploadAnimation() {
         }}
         transition={{ 
           height: {
-            duration: phase === "initial" ? 0.8 : 1,
-            delay: phase === "splitting" ? 0.5 : 0, // Expand after hit effect completes
-            ease: [0.16, 1, 0.3, 1]
+            duration: phase === "initial" ? 1.2 : phase === "resetting" ? 1.0 : 1,
+            delay: phase === "splitting" ? 0.5 : 0,
+            ease: [0.34, 1.56, 0.64, 1]
           },
           width: {
-            duration: phase === "initial" ? 0.8 : 1,
+            duration: phase === "initial" ? 1.2 : phase === "resetting" ? 1.0 : 1,
             delay: phase === "splitting" ? 0.5 : 0,
-            ease: [0.16, 1, 0.3, 1]
+            ease: [0.34, 1.56, 0.64, 1]
           },
           scale: {
-            duration: 0.8,
-            ease: [0.16, 1, 0.3, 1]
+            duration: 1.2,
+            ease: [0.34, 1.56, 0.64, 1]
           },
           opacity: {
-            duration: 0.8,
-            ease: "easeOut"
+            duration: 1.0,
+            ease: [0.34, 1.56, 0.64, 1]
           }
         }}
         className="relative z-10 flex flex-col items-center justify-center rounded-xl border border-white/20 bg-white/10 backdrop-blur-md shadow-lg overflow-hidden cursor-pointer"
@@ -171,28 +263,28 @@ export function Step1UploadAnimation() {
         <AnimatePresence mode="wait">
           {phase === "initial" && showUploadContent && (
             <motion.div
-              key="upload-content"
+              key={`upload-content-${restartKey}`}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ 
                 opacity: 0, 
-                scale: 0.8,
-                y: -15
+                scale: 0.85,
+                y: -10
               }}
               transition={{ 
-                duration: 0.5,
-                ease: "easeInOut"
+                duration: 1.0,
+                ease: [0.34, 1.56, 0.64, 1]
               }}
               className="flex flex-col items-center"
             >
               <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
+                initial={{ scale: 0.85, opacity: 0, y: 8 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
                 whileHover={{
                   scale: 1.15,
                   zIndex: 60,
                 }}
-                transition={{ delay: 0.2, duration: 0.5, ease: "easeOut" }}
+                transition={{ delay: 0.15, duration: 1.0, ease: [0.34, 1.56, 0.64, 1] }}
                 className="mb-4"
               >
                 <div className="h-16 w-16 rounded-xl border-2 border-primary/60 bg-primary/10 flex items-center justify-center">
@@ -202,9 +294,9 @@ export function Step1UploadAnimation() {
                 </div>
               </motion.div>
               <motion.p
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.5, ease: "easeOut" }}
+                transition={{ delay: 0.3, duration: 1.0, ease: [0.34, 1.56, 0.64, 1] }}
                 className="text-base font-semibold text-foreground"
               >
                 Upload
@@ -214,7 +306,7 @@ export function Step1UploadAnimation() {
         </AnimatePresence>
 
         {/* Hit/Impact effect - only during initial phase, before transition */}
-        {phase === "initial" && (
+        {phase === "initial" && showUploadContent && (
           <>
             <motion.div
               initial={{ scale: 1, opacity: 0 }}
@@ -224,7 +316,7 @@ export function Step1UploadAnimation() {
               }}
               transition={{ 
                 duration: 0.8,
-                delay: 1.5,
+                delay: 1.3,
                 ease: "easeOut"
               }}
               className="absolute inset-0 rounded-xl border-4 border-primary/50 pointer-events-none"
@@ -237,7 +329,7 @@ export function Step1UploadAnimation() {
               }}
               transition={{ 
                 duration: 0.6,
-                delay: 1.5,
+                delay: 1.3,
                 ease: "easeOut"
               }}
               className="absolute inset-0 rounded-xl bg-primary/20 pointer-events-none"
@@ -252,7 +344,7 @@ export function Step1UploadAnimation() {
                 }}
                 transition={{ 
                   duration: 0.8,
-                  delay: 1.5 + i * 0.1,
+                  delay: 1.3 + i * 0.1,
                   ease: "easeOut"
                 }}
                 className="absolute inset-0 rounded-xl border-2 border-primary/30 pointer-events-none"
@@ -282,14 +374,25 @@ export function Step1UploadAnimation() {
         </AnimatePresence>
 
         {/* Multiple cards container - appears inside the expanded card */}
-        <AnimatePresence>
-          {(phase === "splitting" || phase === "uploading" || phase === "completed") && (
+        <AnimatePresence mode="wait">
+          {(phase === "splitting" || phase === "uploading" || phase === "completed" || phase === "resetting") && (
             <motion.div
               key="upload-icons-container"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4, delay: 0.2 }}
+              animate={{ 
+                opacity: phase === "resetting" ? 0 : 1,
+                scale: phase === "resetting" ? 0.9 : 1,
+              }}
+              exit={{ 
+                opacity: 0,
+                scale: 0.9,
+                transition: { duration: 1.2, ease: [0.34, 1.56, 0.64, 1] }
+              }}
+              transition={{ 
+                duration: phase === "resetting" ? 1.2 : 0.5, 
+                delay: phase === "resetting" ? 0 : 0.3, 
+                ease: [0.34, 1.56, 0.64, 1]
+              }}
               className="relative flex items-center justify-center gap-3 w-full"
             >
               {Array.from({ length: numCards }).map((_, index) => {
@@ -306,19 +409,43 @@ export function Step1UploadAnimation() {
                       y: 0,
                     }}
                     animate={{
-                      scale: phase === "splitting" ? [0, 1.3, 0.95, 1] : 1,
-                      opacity: phase === "splitting" ? [0, 0.8, 0.9, 1] : 1,
-                      rotate: phase === "splitting" ? [-180, 20, -10, 0] : 0,
-                      y: phase === "splitting" ? [0, -15, 5, 0] : 0,
+                      scale: phase === "splitting" 
+                        ? [0, 1.3, 0.95, 1] 
+                        : phase === "resetting" 
+                          ? [1, 0.8, 0] 
+                          : 1,
+                      opacity: phase === "splitting" 
+                        ? [0, 0.8, 0.9, 1] 
+                        : phase === "resetting" 
+                          ? [1, 0.5, 0] 
+                          : 1,
+                      rotate: phase === "splitting" 
+                        ? [-180, 20, -10, 0] 
+                        : phase === "resetting" 
+                          ? [0, -10, 10, 0] 
+                          : 0,
+                      y: phase === "splitting" 
+                        ? [0, -15, 5, 0] 
+                        : phase === "resetting" 
+                          ? [0, -5, 5, 0] 
+                          : 0,
                     }}
                     whileHover={{
-                      scale: 1.2,
-                      y: -8,
+                      scale: phase === "resetting" ? 1 : 1.2,
+                      y: phase === "resetting" ? 0 : -8,
                       zIndex: 60,
                     }}
                     transition={{
-                      duration: phase === "splitting" ? 1.2 : 0.3,
-                      delay: phase === "splitting" ? 0.3 + index * 0.15 : 0, // Start after "Upload" content is gone
+                      duration: phase === "splitting" 
+                        ? 1.2 
+                        : phase === "resetting" 
+                          ? 1.2 
+                          : 0.3,
+                      delay: phase === "splitting" 
+                        ? 0.3 + index * 0.15 
+                        : phase === "resetting" 
+                          ? index * 0.08 
+                          : 0,
                       ease: [0.34, 1.56, 0.64, 1],
                     }}
                     className="relative flex h-16 w-16 flex-col items-center justify-center rounded-lg border border-white/20 bg-white/10 p-2 backdrop-blur-sm shadow-md cursor-pointer"
@@ -435,12 +562,15 @@ export function Step2MatchAnimation() {
   const [typedText, setTypedText] = React.useState("");
   const [showCursor, setShowCursor] = React.useState(true);
   const [selectedCardIndex, setSelectedCardIndex] = React.useState<number | null>(null);
+  const [restartKey, setRestartKey] = React.useState(0);
   const message = "I lost my black leather jacket, Do you have it?";
   const containerRef = React.useRef<HTMLDivElement>(null);
   const numCards = 4;
+  const restartTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+  const typingIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
   React.useEffect(() => {
-    // Reset on mount
+    // Reset on mount or restart
     setPhase("initial");
     setTypedText("");
     setShowCursor(true);
@@ -451,12 +581,15 @@ export function Step2MatchAnimation() {
     
     // Cards will fly in and stack during typing
     let charIndex = 0;
-    const typingInterval = setInterval(() => {
+    typingIntervalRef.current = setInterval(() => {
       if (charIndex < message.length) {
         setTypedText(message.slice(0, charIndex + 1));
         charIndex++;
       } else {
-        clearInterval(typingInterval);
+        if (typingIntervalRef.current) {
+          clearInterval(typingIntervalRef.current);
+          typingIntervalRef.current = null;
+        }
         // Brief pause after typing completes, then start magnetic attraction
         setTimeout(() => {
           setShowCursor(false);
@@ -470,6 +603,11 @@ export function Step2MatchAnimation() {
             // Show checkmark after collision animation completes with delay
             setTimeout(() => {
               setPhase("checkmark");
+              
+              // After animation completes, set up 10-second timer to restart
+              restartTimerRef.current = setTimeout(() => {
+                setRestartKey((prev) => prev + 1);
+              }, 10000);
             }, 2200);
           }, 1200);
         }, 1000);
@@ -477,9 +615,16 @@ export function Step2MatchAnimation() {
     }, 70); // Faster typing speed
 
     return () => {
-      clearInterval(typingInterval);
+      if (typingIntervalRef.current) {
+        clearInterval(typingIntervalRef.current);
+        typingIntervalRef.current = null;
+      }
+      if (restartTimerRef.current) {
+        clearTimeout(restartTimerRef.current);
+        restartTimerRef.current = null;
+      }
     };
-  }, []);
+  }, [restartKey]);
 
   return (
     <div 
@@ -1162,6 +1307,7 @@ export function Step3CalendarAnimation() {
   const { colorConfig } = useAccentColor();
   const [phase, setPhase] = React.useState<"waiting" | "appearing" | "moving" | "landed">("waiting");
   const [phase2, setPhase2] = React.useState<"waiting" | "appearing" | "moving" | "landed">("waiting");
+  const [restartKey, setRestartKey] = React.useState(0);
   const calendarRef = React.useRef<HTMLDivElement>(null);
   const targetDayRef = React.useRef<HTMLDivElement>(null);
   const targetDay2Ref = React.useRef<HTMLDivElement>(null);
@@ -1176,6 +1322,7 @@ export function Step3CalendarAnimation() {
   });
   const targetDay = 15;
   const targetDay2 = 13;
+  const restartTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
   React.useEffect(() => {
     setPhase("waiting");
@@ -1258,6 +1405,11 @@ export function Step3CalendarAnimation() {
     // Second appointment: Phase 3 - Land and fade out
     const timer5 = setTimeout(() => {
       setPhase2("landed");
+      
+      // After animation completes, set up 10-second timer to restart
+      restartTimerRef.current = setTimeout(() => {
+        setRestartKey((prev) => prev + 1);
+      }, 10000);
     }, 3500);
 
     return () => {
@@ -1266,8 +1418,12 @@ export function Step3CalendarAnimation() {
       clearTimeout(timer3);
       clearTimeout(timer4);
       clearTimeout(timer5);
+      if (restartTimerRef.current) {
+        clearTimeout(restartTimerRef.current);
+        restartTimerRef.current = null;
+      }
     };
-  }, []);
+  }, [restartKey]);
 
   return (
     <div ref={containerRef} className="relative mt-6 flex h-80 items-center justify-center overflow-visible rounded-2xl">
