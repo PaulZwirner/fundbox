@@ -486,7 +486,6 @@ export function Step2MatchAnimation() {
       ref={containerRef}
       className="relative mt-6 flex h-80 items-center justify-center overflow-visible rounded-2xl"
     >
-
       {/* Multiple Photo Cards - Stacked on Left Side */}
       {Array.from({ length: numCards }).map((_, index) => {
         const isSelected = selectedCardIndex === index;

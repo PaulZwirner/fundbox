@@ -53,10 +53,10 @@ const TiltedCard = ({
   return (
     <motion.div
       className={cn("tilted-card", `tilted-card--${accent}`, className)}
-      style={{ rotateX, rotateY }}
+      style={{ rotateX, rotateY, zIndex: 1 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      whileHover={{ scale: 1.03 }}
+      whileHover={{ scale: 1.05, zIndex: 10, y: -4 }}
       transition={{ type: "spring", stiffness: 220, damping: 20 }}
     >
       <div className="tilted-card__overlay" />

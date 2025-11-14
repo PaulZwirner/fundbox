@@ -237,6 +237,20 @@ function StepIndicator({
   disableStepIndicators?: boolean;
 }) {
   const status = currentStep === step ? 'active' : currentStep < step ? 'inactive' : 'complete';
+  const [isDark, setIsDark] = React.useState(true);
+
+  React.useEffect(() => {
+    const checkTheme = () => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    };
+    checkTheme();
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+    return () => observer.disconnect();
+  }, []);
 
   const handleClick = () => {
     if (step !== currentStep && !disableStepIndicators) onClickStep(step);
@@ -256,18 +270,22 @@ function StepIndicator({
     >
       <motion.div
         variants={{
-          inactive: { scale: 1, backgroundColor: 'rgba(255, 255, 255, 0.15)', color: 'rgba(255, 255, 255, 0.85)' },
+          inactive: { 
+            scale: 1, 
+            backgroundColor: 'var(--accent)', 
+            color: isDark ? 'rgba(255, 255, 255, 0.85)' : 'rgba(0, 0, 0, 0.7)' 
+          },
           active: { 
             scale: 1, 
             backgroundColor: 'var(--primary)', 
             color: '#fff', 
-            boxShadow: '0 4px 12px var(--ring)' 
+            boxShadow: '0 4px 12px var(--surface-glow), 0 0 0 2px var(--accent)' 
           },
           complete: { 
             scale: 1, 
             backgroundColor: 'var(--primary)', 
             color: '#fff', 
-            boxShadow: '0 2px 8px var(--ring)' 
+            boxShadow: '0 2px 8px var(--surface-glow), 0 0 0 2px var(--accent)' 
           }
         }}
         transition={{ duration: 0.3 }}

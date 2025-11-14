@@ -4,6 +4,7 @@
   border-radius: 2.5rem;
   overflow: hidden;
   width: 100%;
+  background: transparent;
 }
 
 .border-gradient-bottom {
@@ -15,7 +16,8 @@
   right: -250%;
   border-radius: 50%;
   animation: star-movement-bottom linear infinite alternate;
-  z-index: 0;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .border-gradient-top {
@@ -27,7 +29,8 @@
   left: -250%;
   border-radius: 50%;
   animation: star-movement-top linear infinite alternate;
-  z-index: 0;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .inner-content {
@@ -40,6 +43,9 @@
   padding: 0;
   border-radius: 2.5rem;
   z-index: 1;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
 }
 
 @keyframes star-movement-bottom {

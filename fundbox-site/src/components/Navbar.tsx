@@ -10,6 +10,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
 import AccentColorDropdown from "@/components/AccentColorDropdown";
+import FontDropdown from "@/components/FontDropdown";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const links = [
   { href: "/", labelKey: "nav.home" },
@@ -39,10 +41,12 @@ const Navbar = () => {
           Fundbox
         </Link>
 
-        {/* Accent Color Dropdown, Language Toggle and Menu Icon on the Right */}
+        {/* Font Dropdown, Accent Color Dropdown, Language Toggle, Theme Toggle and Menu Icon on the Right */}
         <div className="flex items-center gap-3">
+          <FontDropdown />
           <AccentColorDropdown />
           <LanguageToggle />
+          <ThemeToggle />
           <div
             className="relative"
             onMouseEnter={() => setIsHovered(true)}

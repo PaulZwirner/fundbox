@@ -25,6 +25,17 @@
     0 28px 60px -20px rgba(0, 0, 0, 0.45),
     0 18px 40px -15px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, z-index 0s;
+  z-index: 1;
+}
+
+.step-circle-container:hover {
+  transform: scale(1.02) translateY(-4px);
+  z-index: 10;
+  box-shadow:
+    0 32px 70px -20px rgba(0, 0, 0, 0.55),
+    0 22px 50px -15px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .step-indicator-row {
@@ -191,12 +202,29 @@
   font-size: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.15);
   transition: all 0.3s ease;
+  position: relative;
+}
+
+.step-indicator-inner::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+  filter: blur(4px);
 }
 
 .active-dot {
   height: 1rem;
   width: 1rem;
   border-radius: 9999px;
+  background-color: #fff;
+}
+
+:root:not(.dark) .active-dot {
   background-color: #fff;
 }
 
@@ -237,6 +265,117 @@
 .step-default span.rounded-full:hover {
   transform: translateY(-4px) scale(1.1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Light mode styles */
+:root:not(.dark) .step-circle-container {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: linear-gradient(
+    135deg,
+    rgba(232, 232, 232, 0.95) 0%,
+    rgba(235, 235, 235, 0.9) 100%
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    0 28px 60px -20px rgba(0, 0, 0, 0.08),
+    0 18px 40px -15px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+:root:not(.dark) .step-circle-container:hover {
+  box-shadow:
+    0 32px 70px -20px rgba(0, 0, 0, 0.12),
+    0 22px 50px -15px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+:root:not(.dark) .step-indicator-row {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+:root:not(.dark) .step-default {
+  color: rgba(0, 0, 0, 0.95);
+}
+
+:root:not(.dark) .step-default h2,
+:root:not(.dark) .step-default h3 {
+  color: rgba(0, 0, 0, 1) !important;
+}
+
+:root:not(.dark) .step-default p {
+  color: rgba(0, 0, 0, 0.9) !important;
+}
+
+:root:not(.dark) .step-default [class*="text-foreground"] {
+  color: rgba(0, 0, 0, 0.95) !important;
+}
+
+:root:not(.dark) .step-default p[class*="text-sm"] {
+  color: rgba(0, 0, 0, 0.9) !important;
+}
+
+:root:not(.dark) .back-button {
+  color: rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+:root:not(.dark) .back-button:hover {
+  color: rgba(0, 0, 0, 1);
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+:root:not(.dark) .back-button.inactive {
+  color: #a3a3a3;
+}
+
+:root:not(.dark) .step-indicator-inner {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+:root:not(.dark) .step-connector {
+  background-color: var(--accent);
+}
+
+:root:not(.dark) .check-icon {
+  color: #fff;
+}
+
+/* Ensure icon accent colors are preserved in light mode */
+:root:not(.dark) .step-default span[class*="bg-primary"],
+:root:not(.dark) .step-default span[class*="inline-flex"] {
+  background-color: var(--accent) !important;
+  border: 1px solid var(--ring) !important;
+  box-shadow: 0 2px 8px var(--surface-glow);
+}
+
+:root:not(.dark) .step-default [class*="text-primary"],
+:root:not(.dark) .step-default svg {
+  color: var(--primary) !important;
+  opacity: 1 !important;
+}
+
+/* Override step indicator variants for light mode - need high specificity to override Framer Motion inline styles */
+:root:not(.dark) .step-indicator .step-indicator-inner {
+  /* Inactive state uses accent color */
+  color: rgba(0, 0, 0, 0.7) !important;
+}
+
+:root:not(.dark) .step-indicator[data-state="active"] .step-indicator-inner,
+:root:not(.dark) .step-indicator[data-state="complete"] .step-indicator-inner {
+  background-color: var(--primary) !important;
+  color: #fff !important;
+  border-color: var(--ring) !important;
+  box-shadow: 0 4px 12px var(--surface-glow), 0 0 0 2px var(--accent) !important;
+}
+
+.step-indicator-inner[style*="var(--primary)"]::before,
+.step-indicator[data-state="active"] .step-indicator-inner::before,
+.step-indicator[data-state="complete"] .step-indicator-inner::before {
+  opacity: 0.6;
 }
 
 @media (max-width: 900px) {

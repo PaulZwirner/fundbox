@@ -4,7 +4,13 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  transition: opacity 0.26s ease-out;
+  transition: opacity 0.26s ease-out, transform 0.3s ease, box-shadow 0.3s ease, z-index 0s;
+  z-index: 1;
+}
+
+.glass-surface:hover {
+  transform: scale(1.03) translateY(-4px);
+  z-index: 10;
 }
 
 .glass-surface__filter {
@@ -69,7 +75,20 @@
   border: 1px solid color-mix(in srgb, var(--background) 50%, rgba(255, 255, 255, 0.4));
 }
 
-.glass-surface--card.glass-surface--svg,
+/* Dark mode border for nav variant */
+.dark .glass-surface--nav.glass-surface--fallback {
+  border: 1px solid color-mix(in srgb, var(--background) 50%, rgba(255, 255, 255, 0.4));
+}
+
+/* Light mode border for nav variant */
+:root:not(.dark) .glass-surface--nav.glass-surface--fallback {
+  border: 1px solid color-mix(in srgb, var(--background) 50%, rgba(0, 0, 0, 0.1));
+}
+
+.glass-surface--card.glass-surface--svg {
+  background: var(--card);
+}
+
 .glass-surface--tile.glass-surface--svg,
 .glass-surface--default.glass-surface--svg {
   background: var(--background);
@@ -78,9 +97,63 @@
 .glass-surface--card.glass-surface--fallback,
 .glass-surface--tile.glass-surface--fallback,
 .glass-surface--default.glass-surface--fallback {
-  background: var(--background);
+  background: var(--card);
   backdrop-filter: blur(24px) saturate(1.4) brightness(1.05);
   -webkit-backdrop-filter: blur(24px) saturate(1.4) brightness(1.05);
+}
+
+/* Dark mode styles for card variant (used in dropdowns) */
+.dark .glass-surface--card.glass-surface--svg {
+  background: #111;
+  backdrop-filter: none;
+  box-shadow:
+    0 28px 60px -20px rgba(0, 0, 0, 0.45),
+    0 18px 40px -15px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid #222;
+}
+
+.dark .glass-surface--card.glass-surface--fallback {
+  background: #111;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid #222;
+  box-shadow:
+    0 28px 60px -20px rgba(0, 0, 0, 0.45),
+    0 18px 40px -15px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Light mode styles for card variant (used in dropdowns) */
+:root:not(.dark) .glass-surface--card.glass-surface--svg {
+  background: var(--card);
+  box-shadow:
+    0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
+    0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset,
+    0px 4px 16px rgba(0, 0, 0, 0.08),
+    0px 8px 24px rgba(0, 0, 0, 0.06),
+    0px 16px 56px rgba(0, 0, 0, 0.04),
+    0px 4px 16px rgba(0, 0, 0, 0.02) inset,
+    0px 8px 24px rgba(0, 0, 0, 0.02) inset,
+    0px 16px 56px rgba(0, 0, 0, 0.01) inset;
+}
+
+
+/* Dark mode styles for fallback surfaces */
+.dark .glass-surface--fallback {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px) saturate(1.8) brightness(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.8) brightness(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+.dark .glass-surface--nav.glass-surface--fallback,
+.dark .glass-surface--tile.glass-surface--fallback,
+.dark .glass-surface--default.glass-surface--fallback {
+  background: var(--background);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -95,11 +168,42 @@
   }
 
   .glass-surface--nav.glass-surface--fallback,
-  .glass-surface--card.glass-surface--fallback,
   .glass-surface--tile.glass-surface--fallback,
   .glass-surface--default.glass-surface--fallback {
     background: var(--background);
   }
+}
+
+/* Light mode styles for glass surfaces */
+:root:not(.dark) .glass-surface--fallback {
+  background: rgba(232, 232, 232, 0.6);
+  backdrop-filter: blur(12px) saturate(1.8) brightness(1.1);
+  -webkit-backdrop-filter: blur(12px) saturate(1.8) brightness(1.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.05),
+    0 8px 32px 0 rgba(0, 0, 0, 0.08),
+    0 2px 16px 0 rgba(0, 0, 0, 0.04);
+}
+
+:root:not(.dark) .glass-surface--card.glass-surface--fallback {
+  background: var(--card);
+  backdrop-filter: blur(24px) saturate(1.4) brightness(1.05);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4) brightness(1.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.05),
+    0 8px 32px 0 rgba(0, 0, 0, 0.08),
+    0 2px 16px 0 rgba(0, 0, 0, 0.04);
+}
+
+:root:not(.dark) .glass-surface--tile.glass-surface--fallback,
+:root:not(.dark) .glass-surface--default.glass-surface--fallback {
+  background: var(--card);
+  backdrop-filter: blur(24px) saturate(1.4) brightness(1.05);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4) brightness(1.05);
 }
 
 @supports not (backdrop-filter: blur(10px)) {

@@ -9,7 +9,7 @@ import GlassSurface from "@/components/GlassSurface";
 import SectionWrapper from "@/components/SectionWrapper";
 import { Button } from "@/components/ui/button";
 import Stepper, { Step } from "@/components/Stepper";
-import { Step1UploadAnimation, Step3CalendarAnimation } from "@/components/StepAnimations";
+import { Step1UploadAnimation, Step2MatchAnimation, Step3CalendarAnimation } from "@/components/StepAnimations";
 import TrueFocus from "@/components/TrueFocus";
 import StarBorder from "@/components/StarBorder";
 import SpotlightCard from "@/components/SpotlightCard";
@@ -72,7 +72,7 @@ export default function Home() {
   ];
   return (
     <div className="space-y-24 pb-28">
-      <section className="relative overflow-hidden bg-black">
+      <section className="relative overflow-hidden bg-background">
         <div className="absolute inset-0">
           <Image
             src="/images/hero-bg.jpg"
@@ -81,7 +81,7 @@ export default function Home() {
             className="object-cover opacity-70"
             priority
           />
-          <div className="absolute inset-0 bg-black" />
+          <div className="absolute inset-0 bg-background" />
         </div>
         <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-24 px-4 pb-32 pt-40 sm:px-6">
           <motion.div
@@ -130,11 +130,12 @@ export default function Home() {
               color={colorConfig.surfaceGlow}
               speed="5s"
               thickness={0}
+              enableHover={true}
             >
-              <SpotlightCard 
-                className="custom-spotlight-card w-full rounded-[2.5rem] border border-white/18"
-                spotlightColor={colorConfig.surfaceGlow}
-              >
+                <SpotlightCard 
+                  className="custom-spotlight-card w-full rounded-[2.5rem]"
+                  spotlightColor={colorConfig.surfaceGlow}
+                >
                 <div className="grid gap-8 p-8 relative z-10">
                   <div>
                     <p className="text-sm uppercase tracking-[0.3em] text-primary/80">{t("home.realtimeInsights")}</p>
@@ -142,37 +143,43 @@ export default function Home() {
                   </div>
                   <div className="grid grid-cols-2 gap-6 text-sm">
                     <motion.div
-                      className="rounded-2xl border border-white/40 bg-white/75 p-5 text-center shadow-inner cursor-pointer"
+                      className="rounded-2xl border border-black/40 dark:border-white/40 bg-black/75 dark:bg-white/75 p-5 text-center shadow-inner cursor-pointer relative"
+                      style={{ zIndex: 1 }}
                       whileHover={{ 
                         y: -8, 
                         scale: 1.05,
+                        zIndex: 10,
                         transition: { duration: 0.2, ease: "easeOut" }
                       }}
                     >
-                      <p className="text-xs uppercase tracking-[0.25em] text-black">{t("home.claimsMatched")}</p>
+                      <p className="text-xs uppercase tracking-[0.25em] text-foreground">{t("home.claimsMatched")}</p>
                       <p className="mt-2 text-2xl font-semibold text-primary">12,480+</p>
                     </motion.div>
                     <motion.div
-                      className="rounded-2xl border border-white/40 bg-white/75 p-5 text-center shadow-inner cursor-pointer"
+                      className="rounded-2xl border border-black/40 dark:border-white/40 bg-black/75 dark:bg-white/75 p-5 text-center shadow-inner cursor-pointer relative"
+                      style={{ zIndex: 1 }}
                       whileHover={{ 
                         y: -8, 
                         scale: 1.05,
+                        zIndex: 10,
                         transition: { duration: 0.2, ease: "easeOut" }
                       }}
                     >
-                      <p className="text-xs uppercase tracking-[0.25em] text-black">{t("home.pickupBooked")}</p>
+                      <p className="text-xs uppercase tracking-[0.25em] text-foreground">{t("home.pickupBooked")}</p>
                       <p className="mt-2 text-2xl font-semibold text-secondary">6,210</p>
                     </motion.div>
                     <motion.div
-                      className="col-span-2 rounded-2xl border border-white/35 bg-white/65 p-5 text-left shadow-inner cursor-pointer"
+                      className="col-span-2 rounded-2xl border border-black/35 dark:border-white/35 bg-black/65 dark:bg-white/65 p-5 text-left shadow-inner cursor-pointer relative"
+                      style={{ zIndex: 1 }}
                       whileHover={{ 
                         y: -8, 
                         scale: 1.02,
+                        zIndex: 10,
                         transition: { duration: 0.2, ease: "easeOut" }
                       }}
                     >
-                      <p className="text-xs uppercase tracking-[0.25em] text-black">{t("home.responseTime")}</p>
-                      <p className="mt-2 text-3xl font-semibold text-black">&lt; 2 min</p>
+                      <p className="text-xs uppercase tracking-[0.25em] text-foreground">{t("home.responseTime")}</p>
+                      <p className="mt-2 text-3xl font-semibold text-foreground">&lt; 2 min</p>
                     </motion.div>
                   </div>
                 </div>
@@ -228,7 +235,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="mt-4">
-                {/* Step 2 animation removed */}
+                <Step2MatchAnimation />
               </div>
             </div>
           </Step>
@@ -309,10 +316,11 @@ export default function Home() {
                   <motion.div
                     key={`${logo.alt}-${idx}`}
                     className="group relative h-24 w-48 flex-shrink-0"
-                    whileHover={{ scale: 1.1 }}
+                    style={{ zIndex: 1 }}
+                    whileHover={{ scale: 1.1, zIndex: 10 }}
                     transition={{ duration: 0.3, ease: "easeOut" }}
                   >
-                    <div className="relative flex h-full w-full items-center justify-center rounded-2xl border border-white/30 bg-white px-6 py-4 overflow-hidden">
+                    <div className="relative flex h-full w-full items-center justify-center rounded-2xl border border-black/30 dark:border-white/30 bg-black dark:bg-white px-6 py-4 overflow-hidden">
                       <div className="flowing-border"></div>
                       <Image 
                         src={logo.src} 

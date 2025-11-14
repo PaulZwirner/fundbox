@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Orbitron } from "next/font/google";
+import { Inter, Orbitron, Poppins, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
 import { cn } from "@/lib/utils";
@@ -9,6 +9,7 @@ import { MotionConfig } from "motion/react";
 import { Toaster } from "@/components/ui/sonner";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AccentColorProvider } from "@/contexts/AccentColorContext";
+import { FontProvider } from "@/contexts/FontContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,6 +21,20 @@ const orbitron = Orbitron({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
   variable: "--font-orbitron",
+  display: "swap",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-poppins",
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-space-grotesk",
   display: "swap",
 });
 
@@ -66,18 +81,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn(inter.variable, orbitron.variable, "bg-background text-foreground")}> 
+      <body className={cn(inter.variable, orbitron.variable, poppins.variable, spaceGrotesk.variable, "bg-background text-foreground")}> 
         <AccentColorProvider>
-          <LanguageProvider>
-            <MotionConfig reducedMotion="user">
-              <div className="flex min-h-screen flex-col">
-                <Navbar />
-                <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
-              <Toaster richColors closeButton position="top-right" />
-            </MotionConfig>
-          </LanguageProvider>
+          <FontProvider>
+            <LanguageProvider>
+              <MotionConfig reducedMotion="user">
+                <div className="flex min-h-screen flex-col">
+                  <Navbar />
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                </div>
+                <Toaster richColors closeButton position="top-right" />
+              </MotionConfig>
+            </LanguageProvider>
+          </FontProvider>
         </AccentColorProvider>
       </body>
     </html>
